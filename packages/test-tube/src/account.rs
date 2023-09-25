@@ -4,7 +4,7 @@ use cosmrs::{
 };
 use cosmwasm_std::Coin;
 
-const ADDRESS_PREFIX: &str = "osmo";
+const ADDRESS_PREFIX: &str = "aura";
 
 pub trait Account {
     fn public_key(&self) -> PublicKey;

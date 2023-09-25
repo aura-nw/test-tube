@@ -6,8 +6,8 @@ use test_tube::runner::result::{RunnerExecuteResult, RunnerResult};
 use test_tube::runner::Runner;
 use test_tube::BaseApp;
 
-const FEE_DENOM: &str = "ueaura";
-const CHAIN_ID: &str = "euphoria-2";
+const FEE_DENOM: &str = "uaura";
+const CHAIN_ID: &str = "aura-testnet";
 const DEFAULT_GAS_ADJUSTMENT: f64 = 1.3;
 
 #[derive(Debug, PartialEq)]
