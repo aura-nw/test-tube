@@ -4,12 +4,8 @@ use aura_std::types::smartaccount::v1beta1::{
     QueryParamsRequest, QueryParamsResponse,
     MsgRecoverRequest, MsgRecoverResponse
 };
-use prost_types::Any;
 
-use cosmwasm_std::Coin;
-use serde::{de::DeserializeOwned, Serialize};
-
-use test_tube::runner::error::{DecodeError, EncodeError, RunnerError};
+use serde::Serialize;
 use test_tube::runner::result::{RunnerExecuteResult, RunnerResult};
 use test_tube::{
     account::{Account, SigningAccount},
@@ -22,7 +18,7 @@ pub struct SmartAccount<'a, R: Runner<'a>> {
 
 impl<'a, R: Runner<'a>> super::Module<'a, R> for SmartAccount<'a, R> {
     fn new(runner: &'a R) -> Self {
-        Wasm { runner }
+        SmartAccount { runner }
     }
 }
 
@@ -33,8 +29,8 @@ where
     pub fn recover(
         &self,
         address: String,
-        public_key: Any,
-        credentials: Vec<u8>,
+        public_key: Option<aura_std::shim::Any>,
+        credentials: String,
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgRecoverResponse> {
         self.runner.execute(
@@ -49,16 +45,14 @@ where
         )
     }
 
-    pub fn activate_account<M>(
+    pub fn activate_account(
         &self,
         code_id: u64,
         salt: Vec<u8>,
-        init_msg: &M,
+        init_msg: Vec<u8>,
         pub_key: Option<aura_std::shim::Any>,
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgActivateAccountResponse>
-    where
-        M: ?Sized + Serialize,
     {
         self.runner.execute(
             MsgActivateAccountRequest {
@@ -73,16 +67,13 @@ where
         )
     }
 
-    pub fn query_generate_account<M, Res>(
+    pub fn query_generate_account(
         &self, 
         code_id: u64,
         salt: Vec<u8>, 
-        init_msg: &M,
+        init_msg: Vec<u8>,
         pub_key: Option<aura_std::shim::Any>
-    ) -> RunnerResult<Res>
-    where
-        M: ?Sized + Serialize,
-        Res: ?Sized + DeserializeOwned,
+    ) -> RunnerResult<String>
     {
         let res = self
             .runner
@@ -96,15 +87,12 @@ where
                 },
             )?;
 
-        serde_json::from_slice(&res.data)
-            .map_err(DecodeError::JsonDecodeError)
-            .map_err(RunnerError::DecodeError)
+        Ok(res.address)
     }
 
-    pub fn query_params<M, Res>(&self, ) -> RunnerResult<Res>
+    pub fn query_params<M>(&self) -> RunnerResult<QueryParamsResponse>
     where
-        M: ?Sized + Serialize,
-        Res: ?Sized + DeserializeOwned,
+        M: ?Sized + Serialize
     {
         let res = self
             .runner
@@ -112,9 +100,7 @@ where
                 "/aura.smartaccount.v1beta1.Query/Params",
                 &QueryParamsRequest {},
             )?;
-
-        serde_json::from_slice(&res.data)
-            .map_err(DecodeError::JsonDecodeError)
-            .map_err(RunnerError::DecodeError)
+            
+        Ok(res)
     }
 }
