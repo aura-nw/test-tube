@@ -20,8 +20,8 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	// cosmos sdk
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	// wasmd
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -40,6 +40,11 @@ var (
 
 //export InitTestEnv
 func InitTestEnv() uint64 {
+	if !testenv.IsConfigSet {
+		testenv.InitSDKConfig()
+		testenv.IsConfigSet = true
+	}
+
 	// Temp fix for concurrency issue
 	mu.Lock()
 	defer mu.Unlock()
@@ -50,7 +55,9 @@ func InitTestEnv() uint64 {
 	// Allow testing unoptimized contract
 	wasmtypes.MaxWasmSize = 1024 * 1024 * 1024 * 1024 * 1024
 
-	env.Ctx = env.App.BaseApp.NewContext(false, tmproto.Header{Height: 0, ChainID: "aura-testnet", Time: time.Now().UTC()})
+	env.Ctx = env.App.BaseApp.NewContext(false, tmproto.Header{Height: 0, ChainID: testenv.ChainID, Time: time.Now().UTC()})
+
+	env.SetupValidator(stakingtypes.Bonded)
 
 	env.BeginNewBlock(true)
 
