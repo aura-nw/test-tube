@@ -269,7 +269,7 @@ impl<'a> Runner<'a> for BaseApp {
                 let tx = self.create_signed_tx(msgs, signer, fee)?;
 
                 let mut buf = Vec::new();
-                RequestDeliverTx::encode(&RequestDeliverTx { tx }, &mut buf)
+                RequestDeliverTx::encode(&RequestDeliverTx { tx: Into::into(tx) }, &mut buf)
                     .map_err(EncodeError::ProtoEncodeError)?;
 
                 let base64_req = base64::encode(buf);

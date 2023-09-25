@@ -28,7 +28,7 @@ where
 
     fn try_from(res: ResponseDeliverTx) -> Result<Self, Self::Error> {
         let tx_msg_data =
-            TxMsgData::decode(res.data.as_slice()).map_err(DecodeError::ProtoDecodeError)?;
+            TxMsgData::decode(res.data.clone()).map_err(DecodeError::ProtoDecodeError)?;
 
         let msg_data = &tx_msg_data
             .data
@@ -48,8 +48,8 @@ where
                         .into_iter()
                         .map(|a| -> Result<Attribute, Utf8Error> {
                             Ok(Attribute {
-                                key: std::str::from_utf8(a.key.as_slice())?.to_string(),
-                                value: std::str::from_utf8(a.value.as_slice())?.to_string(),
+                                key: a.key,
+                                value: a.value,
                             })
                         })
                         .collect::<Result<Vec<Attribute>, Utf8Error>>()?,
@@ -59,7 +59,7 @@ where
 
         Ok(ExecuteResponse {
             data,
-            raw_data: res.data,
+            raw_data: res.data.to_vec(),
             events,
             gas_info: GasInfo {
                 gas_wanted: res.gas_wanted as u64,

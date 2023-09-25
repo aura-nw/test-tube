@@ -13,12 +13,12 @@ exclude = [
 ]
 
 [dependencies]
-base64 = "0.21.4"
-cosmrs = {version = "0.14.0", features = ["cosmwasm"]}
+base64 = "0.13.0"
+cosmrs = {version = "0.12.0", features = ["cosmwasm"]}
 aura-std = {version = "0.1.0", path = "../../lib/aura-std"}
 cosmwasm-schema = "1.1.2"
 cosmwasm-std = "1.1.2"
-prost = "0.12.0"
+prost = "0.11.0"
 prost-types = "0.12.1"
 serde = "1.0.144"
 serde_json = "1.0.85"
