@@ -67,7 +67,7 @@ impl BaseApp {
         Ok(SigningAccount::new(
             signging_key,
             FeeSetting::Auto {
-                gas_price: Coin::new(0, self.fee_denom.clone()),
+                gas_price: 0.025f64,
                 gas_adjustment: self.default_gas_adjustment,
             },
         ))
@@ -167,7 +167,7 @@ impl BaseApp {
 
                 let amount = cosmrs::Coin {
                     denom: self.fee_denom.parse().unwrap(),
-                    amount: (((gas_limit as f64) * (gas_price.amount.u128() as f64)).ceil() as u64)
+                    amount: (((gas_limit as f64) * gas_price).ceil() as u64)
                         .into(),
                 };
 
