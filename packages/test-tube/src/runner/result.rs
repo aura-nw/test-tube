@@ -1,5 +1,5 @@
 use crate::runner::error::{DecodeError, RunnerError};
-use cosmrs::proto::cosmos::base::abci::v1beta1::{GasInfo, TxMsgData};
+use cosmos_sdk_proto::cosmos::base::abci::v1beta1::{GasInfo, TxMsgData};
 use cosmrs::proto::tendermint::abci::ResponseDeliverTx;
 use cosmwasm_std::{Attribute, Event};
 use prost::Message;
@@ -31,13 +31,13 @@ where
             TxMsgData::decode(res.data.clone()).map_err(DecodeError::ProtoDecodeError)?;
 
         let msg_data = &tx_msg_data
-            .data
+            .msg_responses
             // since this tx contains exactly 1 msg
             // when getting none of them, that means error
             .get(0)
             .ok_or(RunnerError::ExecuteError { msg: res.log })?;
 
-        let data = R::decode(msg_data.data.as_slice()).map_err(DecodeError::ProtoDecodeError)?;
+        let data = R::decode(msg_data.value.as_slice()).map_err(DecodeError::ProtoDecodeError)?;
 
         let events = res
             .events
