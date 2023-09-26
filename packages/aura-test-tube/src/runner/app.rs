@@ -1,6 +1,5 @@
 use cosmrs::Any;
 use cosmwasm_std::Coin;
-
 use prost::Message;
 use test_tube::account::SigningAccount;
 
@@ -93,6 +92,7 @@ impl<'a> Runner<'a> for AuraTestApp {
 #[cfg(test)]
 mod tests {
     use std::option::Option::None;
+    use cosmos_sdk_proto::traits::MessageExt;
     use cosmwasm_std::coins;
     use crate::module::Wasm;
     use crate::module::SmartAccount;
@@ -159,19 +159,26 @@ mod tests {
             .code_id; 
         assert_eq!(test_code_id, 1);
 
-
+        
         let pub_key = aura_std::shim::Any {
             type_url: String::from("/cosmos.crypto.secp256k1.PubKey"),
-            value: acc.public_key().to_bytes()
+            value: cosmos_sdk_proto::cosmos::crypto::secp256k1::PubKey { 
+                key: acc.public_key().to_bytes()
+            }.to_bytes().unwrap()
         };
-
-        let asAddr = smartaccount.query_generate_account(
+        // or simple
+        // let pub_key = acc.public_key().to_any().unwrap();
+        
+        let as_addr = smartaccount.query_generate_account(
             test_code_id, 
             "test salt".as_bytes().to_vec(), 
             "{}".as_bytes().to_vec(), 
             Some(pub_key)
         );
-        println!("{}", asAddr.unwrap())
+        println!("{}", as_addr.unwrap());
+
+        let res = smartaccount.query_params();
+        println!("{:?}", res.unwrap());
         
     }
 }
