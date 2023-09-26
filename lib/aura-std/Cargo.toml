@@ -13,6 +13,7 @@ backtraces = ["cosmwasm-std/backtraces", "aura-std-derive/backtraces"]
 [dependencies]
 chrono = {version = "0.4.27", default-features = false}
 cosmwasm-std = {version = "1.1.2", features = ["stargate"]}
+cosmrs = {version = "0.12.0", features = ["cosmwasm"]}
 aura-std-derive = {version = "0.1.0", path = "../aura-std-derive"}
 prost = {version = "0.11.0", default-features = false, features = ["prost-derive"]}
 prost-types = {version = "0.11.0", default-features = false}

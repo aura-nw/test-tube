@@ -150,7 +150,7 @@ pub struct QueryGenerateAccountRequest {
     pub init_msg: ::prost::alloc::vec::Vec<u8>,
 
     #[prost(message, optional, tag = "4")]
-    pub pub_key: ::core::option::Option<crate::shim::Any>
+    pub public_key: ::core::option::Option<crate::shim::Any>
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(

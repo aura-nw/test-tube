@@ -1,12 +1,10 @@
-use ::serde::{ser, Deserialize, Deserializer, Serialize, Serializer};
+use ::serde::{Deserialize, Deserializer, Serialize, Serializer};
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::de;
 use serde::de::Visitor;
 
 use std::fmt;
 use std::str::FromStr;
-
-use prost::Message;
 
 #[derive(Clone, PartialEq, Eq, ::prost::Message, schemars::JsonSchema)]
 pub struct Timestamp {
@@ -181,7 +179,7 @@ macro_rules! expand_as_any {
         impl Serialize for Any {
             fn serialize<S>(
                 &self,
-                serializer: S,
+                _serializer: S,
             ) -> Result<<S as ::serde::Serializer>::Ok, <S as ::serde::Serializer>::Error>
             where
                 S: ::serde::Serializer,
@@ -229,7 +227,7 @@ macro_rules! expand_as_any {
 
                 match type_url {
                     // @type found
-                    Some(t) => {
+                    Some(_t) => {
                         $(
                             if t == <$ty>::TYPE_URL {
                                 return <$ty>::deserialize(
@@ -285,8 +283,6 @@ macro_rules! expand_as_any {
 // work correctly. Since after serialization, it currently loses @type tag.
 // And deserialization works by trying to iteratively match the structure.
 expand_as_any!(
-    crate::types::smartaccount::v1beta1::MsgActivateAccountRequest,
-    crate::types::smartaccount::v1beta1::MsgRecoverRequest,
 );
 
 macro_rules! impl_prost_types_exact_conversion {
