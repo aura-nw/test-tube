@@ -4,8 +4,6 @@ use aura_std::types::smartaccount::v1beta1::{
     QueryParamsRequest, QueryParamsResponse,
     MsgRecoverRequest, MsgRecoverResponse
 };
-
-use serde::Serialize;
 use test_tube::runner::result::{RunnerExecuteResult, RunnerResult};
 use test_tube::{
     account::{Account, SigningAccount},
@@ -72,7 +70,7 @@ where
         code_id: u64,
         salt: Vec<u8>, 
         init_msg: Vec<u8>,
-        pub_key: Option<aura_std::shim::Any>
+        public_key: Option<aura_std::shim::Any>
     ) -> RunnerResult<String>
     {
         let res = self
@@ -83,16 +81,14 @@ where
                     code_id,
                     salt,
                     init_msg,
-                    pub_key,
+                    public_key,
                 },
             )?;
 
         Ok(res.address)
     }
 
-    pub fn query_params<M>(&self) -> RunnerResult<QueryParamsResponse>
-    where
-        M: ?Sized + Serialize
+    pub fn query_params(&self) -> RunnerResult<QueryParamsResponse>
     {
         let res = self
             .runner
