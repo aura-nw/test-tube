@@ -4,12 +4,12 @@ go 1.18
 
 require (
 	github.com/CosmWasm/wasmd v0.41.0
-	github.com/aura-nw/aura v0.0.0-20230918060942-e2acb5bfc0b5
+	github.com/aura-nw/aura v0.0.0-20230923025451-c367472ac0bc
 	github.com/cometbft/cometbft v0.37.2
+	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-sdk v0.47.4
 	github.com/golang/protobuf v1.5.3
 	github.com/pkg/errors v0.9.1
-	github.com/tendermint/tm-db v0.6.6
 )
 
 require (
@@ -23,13 +23,12 @@ require (
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect
 	cosmossdk.io/errors v1.0.0 // indirect
 	cosmossdk.io/log v1.1.1-0.20230704160919-88f2c830b0ca // indirect
-	cosmossdk.io/math v1.0.1 // indirect
+	cosmossdk.io/math v1.0.1
 	cosmossdk.io/tools/rosetta v0.2.1 // indirect
 	github.com/aws/aws-sdk-go v1.44.203 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
-	github.com/cometbft/cometbft-db v0.8.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
 	github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230803181732-7c8f814d3b79 // indirect
 	github.com/cosmos/ibc-go/v7 v7.2.0 // indirect
@@ -57,7 +56,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	go.opencensus.io v0.24.0 // indirect
