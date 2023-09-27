@@ -4,13 +4,12 @@ use cosmrs::{
 };
 use cosmwasm_std::Coin;
 
-const ADDRESS_PREFIX: &str = "aura";
+pub const ADDRESS_PREFIX: &str = "aura";
 
 pub trait Account {
     fn public_key(&self) -> PublicKey;
-    fn address(&self) -> String {
-        self.account_id().to_string()
-    }
+    fn private_key(&self) -> Vec<u8>;
+    fn address(&self) -> String;
     fn account_id(&self) -> AccountId {
         self.public_key()
             .account_id(ADDRESS_PREFIX)
@@ -18,14 +17,18 @@ pub trait Account {
     }
 }
 pub struct SigningAccount {
+    address: String,
     signing_key: SigningKey,
+    private_key: Vec<u8>,
     fee_setting: FeeSetting,
 }
 
 impl SigningAccount {
-    pub fn new(signing_key: SigningKey, fee_setting: FeeSetting) -> Self {
+    pub fn new(address: String, signing_key: SigningKey, private_key: Vec<u8>, fee_setting: FeeSetting) -> Self {
         SigningAccount {
+            address,
             signing_key,
+            private_key,
             fee_setting,
         }
     }
@@ -36,7 +39,9 @@ impl SigningAccount {
 
     pub fn with_fee_setting(self, fee_setting: FeeSetting) -> Self {
         Self {
+            address: self.address,
             signing_key: self.signing_key,
+            private_key: self.private_key,
             fee_setting,
         }
     }
@@ -45,6 +50,12 @@ impl SigningAccount {
 impl Account for SigningAccount {
     fn public_key(&self) -> PublicKey {
         self.signing_key.public_key()
+    }
+    fn private_key(&self) -> Vec<u8> {
+        self.private_key.clone()
+    }
+    fn address(&self) -> String {
+        self.address.clone()
     }
 }
 
@@ -75,6 +86,12 @@ impl From<SigningAccount> for NonSigningAccount {
 impl Account for NonSigningAccount {
     fn public_key(&self) -> PublicKey {
         self.public_key
+    }
+    fn private_key(&self) -> Vec<u8> {
+        Vec::<u8>::new()
+    }
+    fn address(&self) -> String {
+        self.account_id().to_string()
     }
 }
 
