@@ -27,7 +27,7 @@ where
     pub fn recover(
         &self,
         address: String,
-        public_key: Option<aura_std::shim::Any>,
+        public_key: aura_std::shim::Any,
         credentials: String,
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgRecoverResponse> {
@@ -35,7 +35,7 @@ where
             MsgRecoverRequest {
                 creator: signer.address(),
                 address,
-                public_key,
+                public_key: Some(public_key),
                 credentials
             },
             "/aura.smartaccount.v1beta1.MsgRecover",
@@ -48,7 +48,7 @@ where
         code_id: u64,
         salt: Vec<u8>,
         init_msg: Vec<u8>,
-        pub_key: Option<aura_std::shim::Any>,
+        pub_key: aura_std::shim::Any,
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgActivateAccountResponse>
     {
@@ -58,7 +58,7 @@ where
                 code_id,
                 salt,
                 init_msg,
-                pub_key,
+                pub_key: Some(pub_key),
             },
             "/aura.smartaccount.v1beta1.MsgActivateAccount",
             signer,
@@ -70,7 +70,7 @@ where
         code_id: u64,
         salt: Vec<u8>, 
         init_msg: Vec<u8>,
-        public_key: Option<aura_std::shim::Any>
+        public_key: aura_std::shim::Any
     ) -> RunnerResult<String>
     {
         let res = self
@@ -81,7 +81,7 @@ where
                     code_id,
                     salt,
                     init_msg,
-                    public_key,
+                    public_key: Some(public_key),
                 },
             )?;
 

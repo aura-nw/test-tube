@@ -2,14 +2,13 @@ use cosmrs::Any;
 use cosmwasm_std::Coin;
 use prost::Message;
 use test_tube::account::SigningAccount;
-
 use test_tube::runner::result::{RunnerExecuteResult, RunnerResult};
 use test_tube::runner::Runner;
 use test_tube::BaseApp;
 
 const FEE_DENOM: &str = "uaura";
 const CHAIN_ID: &str = "aura-testnet";
-const DEFAULT_GAS_ADJUSTMENT: f64 = 1.3;
+const DEFAULT_GAS_ADJUSTMENT: f64 = 3.0;
 
 #[derive(Debug, PartialEq)]
 pub struct AuraTestApp {
@@ -31,13 +30,17 @@ impl AuraTestApp {
 
     /// Initialize account with initial balance of any coins.
     /// This function mints new coins and send to newly created account
-    pub fn init_account(&self, coins: &[Coin]) -> RunnerResult<SigningAccount> {
-        self.inner.init_account(coins)
+    pub fn init_base_account(&self, coins: &[Coin]) -> RunnerResult<SigningAccount> {
+        self.inner.init_base_account(coins)
     }
     /// Convinience function to create multiple accounts with the same
     /// Initial coins balance
-    pub fn init_accounts(&self, coins: &[Coin], count: u64) -> RunnerResult<Vec<SigningAccount>> {
-        self.inner.init_accounts(coins, count)
+    pub fn init_base_accounts(&self, coins: &[Coin], count: u64) -> RunnerResult<Vec<SigningAccount>> {
+        self.inner.init_base_accounts(coins, count)
+    }
+
+    pub fn init_local_smart_account(&self, address: String, private_key: Vec<u8>) -> RunnerResult<SigningAccount> {
+        self.inner.init_local_smart_account(address, private_key)
     }
 
     /// Simulate transaction execution and return gas info
@@ -92,7 +95,11 @@ impl<'a> Runner<'a> for AuraTestApp {
 #[cfg(test)]
 mod tests {
     use std::option::Option::None;
+    use cosmos_sdk_proto::cosmos::base::v1beta1::Coin;
     use cosmos_sdk_proto::traits::MessageExt;
+    use cosmos_sdk_proto::cosmos::bank::v1beta1::{MsgSend, MsgSendResponse};
+    use test_tube::runner::result::RunnerExecuteResult;
+    use aura_std::types::smartaccount::v1beta1::{Params, CodeID};
     use cosmwasm_std::coins;
     use crate::module::Wasm;
     use crate::module::SmartAccount;
@@ -109,7 +116,7 @@ mod tests {
     fn test_query() {
         let app = AuraTestApp::default();
 
-        let acc = app.init_account(&coins(100_000_000_000, "uaura")).unwrap();
+        let acc = app.init_base_account(&coins(100_000_000_000, "uaura")).unwrap();
         let addr = acc.address();
 
         let acc_balance = get_account_balances(&app, addr, "uaura");
@@ -141,11 +148,11 @@ mod tests {
     fn test_smartaccount() {
         let app = AuraTestApp::default();
 
-        let acc = app.init_account(&coins(100_000_000_000, "uaura")).unwrap();
+        let acc = app.init_base_account(&coins(100_000_000_000, "uaura")).unwrap();
         
         let wasm = Wasm::new(&app);
         let smartaccount = SmartAccount::new(&app);
-
+        
         let test_code = std::fs::read("./test_artifacts/base.wasm").unwrap(); // load contract wasm 
 
         let test_code_id = wasm
@@ -169,16 +176,53 @@ mod tests {
         // or simple
         // let pub_key = acc.public_key().to_any().unwrap();
         
-        let as_addr = smartaccount.query_generate_account(
-            test_code_id, 
-            "test salt".as_bytes().to_vec(), 
-            "{}".as_bytes().to_vec(), 
-            Some(pub_key)
-        );
-        println!("{}", as_addr.unwrap());
+        let salt = "test salt".as_bytes().to_vec();
+        let init_msg = "{}".as_bytes().to_vec();
 
-        let res = smartaccount.query_params();
-        println!("{:?}", res.unwrap());
+        let sa_addr = smartaccount.query_generate_account(
+            test_code_id, 
+            salt.clone(), 
+            init_msg.clone(), 
+            pub_key.clone()
+        ).unwrap();
+        println!("{}", sa_addr);
+
+        let param_set = aura_std::shim::Any{
+            type_url: String::from("/aura.smartaccount.v1beta1.Params"),
+            value: Params {
+                whitelist_code_id: vec![CodeID{
+                    code_id: 1,
+                    status: true
+                }],
+                disable_msgs_list: vec![],
+                max_gas_execute: 2000000,
+            }.to_bytes().unwrap()
+        };
+        let _ = app.set_param_set("smartaccount", param_set.into()).unwrap();
+
+        let banksend_res: RunnerExecuteResult<MsgSendResponse> = app.execute(
+            MsgSend {
+                from_address: acc.address(),
+                to_address: sa_addr.clone(),
+                amount: vec![Coin{
+                    denom: "uaura".to_string(),
+                    amount: "100000".to_string(),
+                }],
+            }, 
+            "/cosmos.bank.v1beta1.MsgSend", 
+            &acc
+        );
+        assert!(banksend_res.is_ok());
+
+        let sa_acc = app.init_local_smart_account(sa_addr.clone(), acc.private_key()).unwrap();
+        let response = smartaccount.activate_account(
+            test_code_id, 
+            salt, 
+            init_msg, 
+            pub_key, 
+            &sa_acc,
+        ).unwrap();
+        assert_eq!(response.data.address, sa_addr);
         
     }
 }
