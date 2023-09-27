@@ -11,6 +11,7 @@ import (
 	"time"
 
 	// helpers
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 
@@ -51,6 +52,9 @@ func InitTestEnv() uint64 {
 
 	env := new(testenv.TestEnv)
 	env.App = testenv.SetupAuraApp()
+	env.ParamTypesRegistry = *testenv.NewParamTypeRegistry()
+
+	env.SetupParamTypes()
 
 	// Allow testing unoptimized contract
 	wasmtypes.MaxWasmSize = 1024 * 1024 * 1024 * 1024 * 1024
@@ -181,7 +185,7 @@ func AccountSequence(envId uint64, bech32Address string) uint64 {
 	acc := env.App.AccountKeeper.GetAccount(env.Ctx, addr)
 
 	if acc == nil {
-		panic(nil)
+		panic("account not found")
 	}
 
 	seq := acc.GetSequence()
@@ -222,6 +226,74 @@ func Simulate(envId uint64, base64TxBytes string) *C.char { // => base64GasInfo
 	}
 
 	bz, err := proto.Marshal(&gasInfo)
+	if err != nil {
+		panic(err)
+	}
+
+	return encodeBytesResultBytes(bz)
+}
+
+//export SetParamSet
+func SetParamSet(envId uint64, subspaceName, base64ParamSetBytes string) *C.char {
+	env := loadEnv(envId)
+
+	// Temp fix for concurrency issue
+	mu.Lock()
+	defer mu.Unlock()
+
+	paramSetBytes, err := base64.StdEncoding.DecodeString(base64ParamSetBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	subspace, ok := env.App.ParamsKeeper.GetSubspace(subspaceName)
+	if !ok {
+		err := errors.New("No subspace found for `" + subspaceName + "`")
+		return encodeErrToResultBytes(result.ExecuteError, err)
+	}
+
+	pReg := env.ParamTypesRegistry
+
+	any := codectypes.Any{}
+	err = proto.Unmarshal(paramSetBytes, &any)
+
+	if err != nil {
+		return encodeErrToResultBytes(result.ExecuteError, err)
+	}
+
+	pset, err := pReg.UnpackAny(&any)
+
+	if err != nil {
+		return encodeErrToResultBytes(result.ExecuteError, err)
+	}
+
+	subspace.SetParamSet(env.Ctx, pset)
+
+	// return empty bytes if no error
+	return encodeBytesResultBytes([]byte{})
+}
+
+//export GetParamSet
+func GetParamSet(envId uint64, subspaceName, typeUrl string) *C.char {
+	env := loadEnv(envId)
+
+	subspace, ok := env.App.ParamsKeeper.GetSubspace(subspaceName)
+	if !ok {
+		err := errors.New("No subspace found for `" + subspaceName + "`")
+		return encodeErrToResultBytes(result.ExecuteError, err)
+	}
+
+	pReg := env.ParamTypesRegistry
+	pset, ok := pReg.GetEmptyParamsSet(typeUrl)
+
+	if !ok {
+		err := errors.New("No param set found for `" + typeUrl + "`")
+		return encodeErrToResultBytes(result.ExecuteError, err)
+	}
+	subspace.GetParamSet(env.Ctx, pset)
+
+	bz, err := proto.Marshal(pset)
+
 	if err != nil {
 		panic(err)
 	}

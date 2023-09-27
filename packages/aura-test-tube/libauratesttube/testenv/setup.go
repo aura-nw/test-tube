@@ -36,11 +36,13 @@ import (
 
 	// aura
 	"github.com/aura-nw/aura/app"
+	smartaccounttypes "github.com/aura-nw/aura/x/smartaccount/types/v1beta1"
 )
 
 type TestEnv struct {
-	App *app.App
-	Ctx sdk.Context
+	App                *app.App
+	Ctx                sdk.Context
+	ParamTypesRegistry ParamTypeRegistry
 }
 
 const ChainID = "aura-testnet"
@@ -279,6 +281,11 @@ func (env *TestEnv) SetupValidator(bondStatus stakingtypes.BondStatus) {
 		0,
 	)
 	env.App.SlashingKeeper.SetValidatorSigningInfo(env.Ctx, consAddr, signingInfo)
+}
+
+func (env *TestEnv) SetupParamTypes() {
+	pReg := env.ParamTypesRegistry
+	pReg.RegisterParamSet(&smartaccounttypes.Params{})
 }
 
 func PubKeyDecode(pubKey *codectypes.Any) (cryptotypes.PubKey, error) {
