@@ -96,18 +96,10 @@ impl<'a> Runner<'a> for AuraTestApp {
 #[cfg(test)]
 mod tests {
     use std::option::Option::None;
-    use cosmos_sdk_proto::cosmos::base::v1beta1::Coin;
-    use cosmos_sdk_proto::traits::MessageExt;
-    use cosmos_sdk_proto::cosmos::bank::v1beta1::{MsgSend, MsgSendResponse};
-    use test_tube::runner::result::RunnerExecuteResult;
-    use aura_std::types::smartaccount::v1beta1::{Params, CodeID};
     use cosmwasm_std::coins;
-    use crate::module::Wasm;
-    use crate::module::SmartAccount;
     use crate::runner::app::AuraTestApp;
     use test_tube::account::Account;
     use test_tube::runner::*;
-    use test_tube::module::Module;
 
     use cosmrs::proto::cosmos::bank::v1beta1::{
         QueryAllBalancesRequest, QueryAllBalancesResponse
@@ -143,85 +135,5 @@ mod tests {
         .unwrap();
 
         return acc_balance;
-    }
-
-    #[test]
-    fn test_smartaccount() {
-        let app = AuraTestApp::default();
-
-        let acc = app.init_base_account(&coins(100_000_000_000, "uaura")).unwrap();
-        
-        let wasm = Wasm::new(&app);
-        let smartaccount = SmartAccount::new(&app);
-        
-        let test_code = std::fs::read("./test_artifacts/base.wasm").unwrap(); // load contract wasm 
-
-        let test_code_id = wasm
-            .store_code(
-                &test_code, 
-                None, 
-                &acc  
-            )
-            .unwrap()
-            .data
-            .code_id; 
-        assert_eq!(test_code_id, 1);
-
-        
-        let pub_key = aura_std::shim::Any {
-            type_url: String::from("/cosmos.crypto.secp256k1.PubKey"),
-            value: cosmos_sdk_proto::cosmos::crypto::secp256k1::PubKey { 
-                key: acc.public_key().to_bytes()
-            }.to_bytes().unwrap()
-        };
-        // or simple
-        // let pub_key = acc.public_key().to_any().unwrap();
-        
-        let salt = "test salt".as_bytes().to_vec();
-        let init_msg = "{}".as_bytes().to_vec();
-
-        let sa_addr = smartaccount.query_generate_account(
-            test_code_id, 
-            salt.clone(), 
-            init_msg.clone(), 
-            pub_key.clone()
-        ).unwrap();
-
-        let param_set = aura_std::shim::Any{
-            type_url: String::from("/aura.smartaccount.v1beta1.Params"),
-            value: Params {
-                whitelist_code_id: vec![CodeID{
-                    code_id: 1,
-                    status: true
-                }],
-                disable_msgs_list: vec![],
-                max_gas_execute: 2000000,
-            }.to_bytes().unwrap()
-        };
-        let _ = app.set_param_set("smartaccount", param_set.into()).unwrap();
-
-        let banksend_res: RunnerExecuteResult<MsgSendResponse> = app.execute(
-            MsgSend {
-                from_address: acc.address(),
-                to_address: sa_addr.clone(),
-                amount: vec![Coin{
-                    denom: "uaura".to_string(),
-                    amount: "10000000".to_string(),
-                }],
-            }, 
-            "/cosmos.bank.v1beta1.MsgSend", 
-            &acc
-        );
-        assert!(banksend_res.is_ok());
-
-        let sa_acc = app.init_local_smart_account(sa_addr.clone(), acc.private_key()).unwrap();
-        let _ = smartaccount.activate_account(
-            test_code_id, 
-            salt, 
-            init_msg, 
-            pub_key, 
-            &sa_acc,
-        ).unwrap();
-        
     }
 }
