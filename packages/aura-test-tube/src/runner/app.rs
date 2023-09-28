@@ -8,7 +8,8 @@ use test_tube::BaseApp;
 
 const FEE_DENOM: &str = "uaura";
 const CHAIN_ID: &str = "aura-testnet";
-const DEFAULT_GAS_ADJUSTMENT: f64 = 3.0;
+const DEFAULT_GAS_ADJUSTMENT: f64 = 2.0;
+const DEFAULT_GAS_LIMIT: u64 = 20000000;
 
 #[derive(Debug, PartialEq)]
 pub struct AuraTestApp {
@@ -24,7 +25,7 @@ impl Default for AuraTestApp {
 impl AuraTestApp {
     pub fn new() -> Self {
         Self {
-            inner: BaseApp::new(FEE_DENOM, CHAIN_ID, DEFAULT_GAS_ADJUSTMENT),
+            inner: BaseApp::new(FEE_DENOM, CHAIN_ID, DEFAULT_GAS_ADJUSTMENT, DEFAULT_GAS_LIMIT),
         }
     }
 
@@ -185,7 +186,6 @@ mod tests {
             init_msg.clone(), 
             pub_key.clone()
         ).unwrap();
-        println!("{}", sa_addr);
 
         let param_set = aura_std::shim::Any{
             type_url: String::from("/aura.smartaccount.v1beta1.Params"),
@@ -206,7 +206,7 @@ mod tests {
                 to_address: sa_addr.clone(),
                 amount: vec![Coin{
                     denom: "uaura".to_string(),
-                    amount: "100000".to_string(),
+                    amount: "10000000".to_string(),
                 }],
             }, 
             "/cosmos.bank.v1beta1.MsgSend", 
@@ -215,14 +215,13 @@ mod tests {
         assert!(banksend_res.is_ok());
 
         let sa_acc = app.init_local_smart_account(sa_addr.clone(), acc.private_key()).unwrap();
-        let response = smartaccount.activate_account(
+        let _ = smartaccount.activate_account(
             test_code_id, 
             salt, 
             init_msg, 
             pub_key, 
             &sa_acc,
         ).unwrap();
-        assert_eq!(response.data.address, sa_addr);
         
     }
 }

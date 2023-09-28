@@ -4,7 +4,7 @@ use cosmrs::crypto::secp256k1::SigningKey;
 use cosmrs::proto::tendermint::abci::{RequestDeliverTx, ResponseDeliverTx};
 use cosmrs::tx::{Fee, SignerInfo};
 use cosmrs::{tx, Any};
-use cosmwasm_std::Coin;
+use cosmwasm_std::{Coin, Uint128};
 use prost::Message;
 
 use crate::account::{Account, FeeSetting, SigningAccount, ADDRESS_PREFIX};
@@ -24,16 +24,18 @@ pub struct BaseApp {
     fee_denom: String,
     chain_id: String,
     default_gas_adjustment: f64,
+    default_gas_limit: u64,
 }
 
 impl BaseApp {
-    pub fn new(fee_denom: &str, chain_id: &str, default_gas_adjustment: f64) -> Self {
+    pub fn new(fee_denom: &str, chain_id: &str, default_gas_adjustment: f64, default_gas_limit: u64) -> Self {
         let id = unsafe { InitTestEnv() };
         BaseApp {
             id,
             fee_denom: fee_denom.to_string(),
             chain_id: chain_id.to_string(),
             default_gas_adjustment,
+            default_gas_limit,
         }
     }
 
@@ -94,9 +96,13 @@ impl BaseApp {
             address,
             signging_key,
             private_key,
-            FeeSetting::Auto {
-                gas_price: 0.025f64,
-                gas_adjustment: self.default_gas_adjustment,
+            FeeSetting::Custom { 
+                // gas price is 0.025
+                amount: Coin { 
+                    denom: self.fee_denom.clone(), 
+                    amount: Uint128::from(50000u128)
+                }, 
+                gas_limit: self.default_gas_limit 
             },
         ))
     }   
