@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/CosmWasm/wasmd v0.41.0
-	github.com/aura-nw/aura v0.0.0-20230923025451-c367472ac0bc
+	github.com/aura-nw/aura v0.0.0-20230928085440-b8051adb5442
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-sdk v0.47.4
