@@ -174,7 +174,6 @@ mod unit_tests {
 
         let listener_code = std::fs::read("../../artifacts/listener.wasm").unwrap(); // load contract wasm 
 
-        // store wasm for smartaccount initialization
         let listener_code_id = wasm
             .store_code(
                 &listener_code, 
@@ -184,7 +183,7 @@ mod unit_tests {
             .unwrap()
             .data
             .code_id; 
-        assert_eq!(test_code_id, 1);
+        assert_eq!(listener_code_id, 2);
 
         let wasm_instantiate = wasm.instantiate(
             listener_code_id,
@@ -195,6 +194,7 @@ mod unit_tests {
             &acc, 
         ).unwrap();
 
+        // use smartaccount to execute contract
         let _ = wasm.execute(&wasm_instantiate.data.address, &Listen{
             listen: EmptyInit{}
         }, &[], &sa_acc).unwrap();
