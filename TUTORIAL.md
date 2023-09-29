@@ -15,7 +15,7 @@ let app = AuraTestApp::default();
 
 ### Methods
 
-* Execute message
+* `Execute message`
     ```Rust
     fn execute<M, R>(
         &self,
@@ -24,7 +24,7 @@ let app = AuraTestApp::default();
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<R>
     ```
-* Execute multi message
+* `Execute multi message`
     ```Rust
     fn execute_multiple<M, R>(
         &self,
@@ -32,7 +32,7 @@ let app = AuraTestApp::default();
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<R>
     ```
-* Query
+* `Query`
     ```Rust
     fn query<Q, R>(
         &self, 
@@ -57,7 +57,7 @@ let app = AuraTestApp::default();
     .parse::<u128>()
     .unwrap();
     ```
-* Init base account on-chain
+* `Init base account on-chain`
     ```Rust
     pub fn init_base_account(
         &self, 
@@ -69,7 +69,7 @@ let app = AuraTestApp::default();
     // init new base account with 100_000_000_000uaura, account will exist on-chain
     let acc = app.init_base_account(&coins(100_000_000_000, "uaura")).unwrap();
     ```
-* Init local smart account
+* `Init local smart account`
     ```Rust
     pub fn init_local_smart_account(
         &self, 
@@ -82,7 +82,7 @@ let app = AuraTestApp::default();
     // local account which has not been initialized on-chain
     let sa_acc = app.init_local_smart_account(sa_addr.clone(), acc.private_key()).unwrap();
     ```
-* Simulate
+* `Simulate`
     ```Rust
     pub fn simulate_tx<I>(
         &self,
@@ -90,7 +90,7 @@ let app = AuraTestApp::default();
         signer: &SigningAccount,
     ) -> RunnerResult<GasInfo>
     ```
-* Set Params
+* `Set Params`
     ```Rust
     /// Set parameter set for a given subspace.
     pub fn set_param_set(
@@ -99,7 +99,7 @@ let app = AuraTestApp::default();
         pset: Any
     ) -> RunnerResult<()>
     ```
-* Get Params
+* `Get Params`
     ```Rust
     /// Get parameter set for a given subspace.
     pub fn get_param_set<P: Message + Default>(
@@ -120,7 +120,7 @@ let wasm = Wasm::new(&app);
 
 ### Methods
 
-* Store Code
+* `Store Code`
     ```Rust
      pub fn store_code(
         &self,
@@ -147,7 +147,7 @@ let wasm = Wasm::new(&app);
         &acc  
     ).unwrap()
     ```
-* Instantiate
+* `Instantiate`
     ```Rust
     pub fn instantiate<M>(
         &self,
@@ -159,7 +159,7 @@ let wasm = Wasm::new(&app);
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgInstantiateContractResponse>
     ```
-* Instantiate2
+* `Instantiate2`
     ```Rust
     pub fn instantiate2<M>(
         &self,
@@ -173,7 +173,7 @@ let wasm = Wasm::new(&app);
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgInstantiateContract2Response>
     ```
-* Execute
+* `Execute`
     ```Rust
     pub fn execute<M>(
         &self,
@@ -183,7 +183,7 @@ let wasm = Wasm::new(&app);
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgExecuteContractResponse>
     ```
-* Query
+* `Query`
     ```Rust
     pub fn query<M, Res>(
         &self, 
@@ -203,7 +203,7 @@ let smartaccount = SmartAccount::new(&app);
 
 ### Methods
 
-* Recover
+* `Recover`
     ```Rust
     pub fn recover(
         &self,
@@ -213,7 +213,7 @@ let smartaccount = SmartAccount::new(&app);
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgRecoverResponse>
     ```
-* Activate account
+* `Activate account`
     ```Rust
     pub fn activate_account(
         &self,
@@ -224,7 +224,7 @@ let smartaccount = SmartAccount::new(&app);
         signer: &SigningAccount,
     ) -> RunnerExecuteResult<MsgActivateAccountResponse>
     ```
-* Query generate smart account
+* `Query generate smart account`
     ```Rust
     pub fn query_generate_account(
         &self, 
@@ -234,7 +234,7 @@ let smartaccount = SmartAccount::new(&app);
         public_key: aura_std::shim::Any
     ) -> RunnerResult<String>
     ```
-* Query params
+* `Query params`
     ```Rust
     pub fn query_params(&self) -> RunnerResult<QueryParamsResponse>
     ```
@@ -264,11 +264,11 @@ pub struct SigningAccount {
 
 ### Methods
 
-* New
+* `New`
     ```Rust
     pub fn new(address: String, signing_key: SigningKey, private_key: Vec<u8>, fee_setting: FeeSetting) -> Self
     ```
-* With fee setting
+* `With fee setting`
     ```Rust
     pub fn with_fee_setting(self, fee_setting: FeeSetting) -> Self
 
