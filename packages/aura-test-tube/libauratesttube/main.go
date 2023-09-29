@@ -63,7 +63,7 @@ func InitTestEnv() uint64 {
 
 	env.SetupValidator(stakingtypes.Bonded)
 
-	env.BeginNewBlock(true)
+	env.BeginNewBlock(false)
 
 	reqEndBlock := abci.RequestEndBlock{Height: env.Ctx.BlockHeight()}
 	env.App.EndBlock(reqEndBlock)
