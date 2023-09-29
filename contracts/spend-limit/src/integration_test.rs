@@ -4,12 +4,12 @@ mod unit_tests {
     use cosmos_sdk_proto::cosmos::base::v1beta1::Coin;
     use cosmos_sdk_proto::traits::MessageExt;
     use cosmos_sdk_proto::cosmos::bank::v1beta1::{MsgSend, MsgSendResponse};
+    use cosmwasm_schema::cw_serde;
     use test_tube::runner::result::RunnerExecuteResult;
     use aura_std::types::smartaccount::v1beta1::{Params, CodeID};
     use cosmwasm_std::coins;
     use aura_test_tube::{Wasm, AuraTestApp, SmartAccount};
     use test_tube::{Account, Runner, Module, SigningAccount};
-
     use cosmrs::proto::cosmos::bank::v1beta1::{
         QueryAllBalancesRequest, QueryAllBalancesResponse
     };
@@ -43,6 +43,14 @@ mod unit_tests {
             "/cosmos.bank.v1beta1.MsgSend", 
             from
         )
+    }
+
+    #[cw_serde]
+    struct EmptyInit {}
+
+    #[cw_serde]
+    struct Listen {
+        listen: EmptyInit
     }
 
     #[test]
@@ -145,8 +153,7 @@ mod unit_tests {
         acc2.address(),
         vec![Coin{denom: "uaura".to_string(),amount: "5000".to_string(),}]
         );       
-        banksend_res.unwrap();
-        //assert!(banksend_res.is_ok());
+        assert!(banksend_res.is_ok());
 
         // send coin from smartaccount success
         let acc_balance = get_account_balances(&app, acc2.address(), "uaura");
@@ -158,13 +165,38 @@ mod unit_tests {
         acc2.address(),
         vec![Coin{denom: "uaura".to_string(),amount: "5001".to_string(),}]
         );       
-        assert!(banksend_res.is_ok());
+        assert!(banksend_res.is_err());
 
-        // send coin from smartaccount fail, reach spend-limit
-        let acc_balance = get_account_balances(&app, sa_acc.address(), "uaura");
-        println!("{}", acc_balance);
+        // send coin from smartaccount fail, reach spend-limit 
         let acc_balance = get_account_balances(&app, acc2.address(), "uaura");
-        println!("{}", acc_balance);
-        //assert_eq!(acc_balance, 5010u128);
+        assert_eq!(acc_balance, 5010u128);
+
+
+        let listener_code = std::fs::read("../../artifacts/listener.wasm").unwrap(); // load contract wasm 
+
+        // store wasm for smartaccount initialization
+        let listener_code_id = wasm
+            .store_code(
+                &listener_code, 
+                None, 
+                &acc  
+            )
+            .unwrap()
+            .data
+            .code_id; 
+        assert_eq!(test_code_id, 1);
+
+        let wasm_instantiate = wasm.instantiate(
+            listener_code_id,
+            &EmptyInit{},
+            None,
+            Some("listener"), 
+            &[], 
+            &acc, 
+        ).unwrap();
+
+        let _ = wasm.execute(&wasm_instantiate.data.address, &Listen{
+            listen: EmptyInit{}
+        }, &[], &sa_acc).unwrap();
     }
 }

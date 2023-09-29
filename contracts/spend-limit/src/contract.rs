@@ -2,7 +2,7 @@
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
     Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Uint128, Timestamp,
-    AllBalanceResponse, QueryRequest, BankQuery, QuerierWrapper, Empty,
+    AllBalanceResponse, QueryRequest, BankQuery, QuerierWrapper, Empty, to_binary,
 };
 use cw2::set_contract_version;
 
@@ -142,6 +142,16 @@ fn contract_all_balances<'a>(querier: QuerierWrapper<'a, Empty>, address: String
 
 /// Handling contract query
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
-    match msg {}
+pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
+    match msg {
+        QueryMsg::GetLimt { denom } => to_binary(&query_limit(deps, env, denom)?)
+    }
+}
+
+pub fn query_limit(
+    deps: Deps,
+    _env: Env,
+    denom: String
+) -> StdResult<Option<Limit>> {
+    LIMITS.may_load(deps.storage, denom)
 }

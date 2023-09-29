@@ -1,4 +1,5 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
+use crate::state::Limit;
 use cosmwasm_std::Coin;
 
 /// Message type for `instantiate` entry_point
@@ -63,5 +64,9 @@ pub struct MsgSend {
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
+    #[returns(Option<Limit>)]
+    GetLimt {
+        denom: String
+    },
 }
 

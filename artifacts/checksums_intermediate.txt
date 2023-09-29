@@ -1,2 +1,2 @@
 eee25e097a64a31f7f267604d02ac3c650e0a1dee79e90321f0c5eeecbc4d84e  /target/wasm32-unknown-unknown/release/listener.wasm
-415fe5e81c2ab3e3a89f8c06789c0a231877a73b277f30bdfe05720e8f996441  /target/wasm32-unknown-unknown/release/spend_limit.wasm
+3f5f34f63b49f3c4346099811d0059cebef9c6ac17b07dbccbdfdd62f00a593b  /target/wasm32-unknown-unknown/release/spend_limit.wasm
