@@ -171,6 +171,21 @@ mod unit_tests {
         let acc_balance = get_account_balances(&app, acc2.address(), "uaura");
         assert_eq!(acc_balance, 5010u128);
 
+        _ = app.skip_time(3600); // skip 1hours
+
+        // re-send after 1hours
+        let banksend_res: RunnerExecuteResult<MsgSendResponse> = send_coin(
+            &app,
+        &sa_acc,
+        acc2.address(),
+        vec![Coin{denom: "uaura".to_string(),amount: "5001".to_string(),}]
+        );       
+        assert!(banksend_res.is_ok());
+
+        // send coin from smartaccount success, spend-limit outdated
+        let acc_balance = get_account_balances(&app, acc2.address(), "uaura");
+        assert_eq!(acc_balance, 10011u128);
+
 
         let listener_code = std::fs::read("../../artifacts/listener.wasm").unwrap(); // load contract wasm 
 

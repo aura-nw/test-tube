@@ -117,6 +117,16 @@ func EndBlock(envId uint64) {
 	envRegister.Store(envId, env)
 }
 
+//export SkipTime
+func SkipTime(envId uint64, skipTime int64) {
+	env := loadEnv(envId)
+	curTime := env.Ctx.BlockTime()
+
+	env.Ctx = env.Ctx.WithBlockTime(curTime.Add(time.Duration(skipTime) * time.Second))
+
+	envRegister.Store(envId, env)
+}
+
 //export Execute
 func Execute(envId uint64, base64ReqDeliverTx string) *C.char {
 	env := loadEnv(envId)

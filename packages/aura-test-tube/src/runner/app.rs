@@ -29,6 +29,11 @@ impl AuraTestApp {
         }
     }
 
+    // skip time in second
+    pub fn skip_time(&self, skip_time: i64) -> RunnerResult<()> {
+        self.inner.skip_time(skip_time)
+    }
+
     /// Initialize account with initial balance of any coins.
     /// This function mints new coins and send to newly created account
     pub fn init_base_account(&self, coins: &[Coin]) -> RunnerResult<SigningAccount> {
