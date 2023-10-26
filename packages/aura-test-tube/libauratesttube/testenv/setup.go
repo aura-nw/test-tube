@@ -47,6 +47,7 @@ type TestEnv struct {
 
 const ChainID = "aura-testnet"
 const BondDenom = "uaura"
+const BlockTime = 5
 
 var DefaultConsensusParams = &tmproto.ConsensusParams{
 	Block: &tmproto.BlockParams{
@@ -229,7 +230,7 @@ func (env *TestEnv) BeginNewBlock(beginBlock bool) {
 	requireNoErr(err)
 	valAddr = valAddrFancy.Bytes()
 
-	newBlockTime := env.Ctx.BlockTime().Add(5 * time.Second)
+	newBlockTime := env.Ctx.BlockTime().Add(BlockTime * time.Second)
 	if beginBlock {
 		newBlockTime = time.UnixMilli(0)
 	}

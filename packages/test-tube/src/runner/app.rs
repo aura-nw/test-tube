@@ -10,7 +10,7 @@ use prost::Message;
 use crate::account::{Account, FeeSetting, SigningAccount, ADDRESS_PREFIX};
 use crate::bindings::{
     AccountNumber, AccountSequence, BeginBlock, EndBlock, Execute, GetParamSet, InitAccount,
-    InitTestEnv, Query, SetParamSet, Simulate,
+    InitTestEnv, Query, SetParamSet, Simulate, SkipTime,
 };
 use crate::redefine_as_go_string;
 use crate::runner::error::{DecodeError, EncodeError, RunnerError};
@@ -106,6 +106,13 @@ impl BaseApp {
             },
         ))
     }   
+
+    pub fn skip_time(&self, skip_time: i64) -> RunnerResult<()> {
+        unsafe {
+            SkipTime(self.id, skip_time);
+        }
+        return Ok(())
+    }
 
     fn create_signed_tx<I>(
         &self,
