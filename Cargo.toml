@@ -2,5 +2,5 @@
 resolver = "2"
 
 members = [
-  "packages/aura-test-tube", "packages/test-tube", "lib/*", "contracts/*",
+  "packages/aura-test-tube", "packages/aura-proto",
 ]
