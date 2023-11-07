@@ -6,10 +6,10 @@ use test_tube::runner::result::{RunnerExecuteResult, RunnerResult};
 use test_tube::runner::Runner;
 use test_tube::BaseApp;
 
-const FEE_DENOM: &str = "uaura";
-const CHAIN_ID: &str = "aura-testnet";
-const DEFAULT_GAS_ADJUSTMENT: f64 = 2.0;
-const DEFAULT_GAS_LIMIT: u64 = 20000000;
+pub const FEE_DENOM: &str = "uaura";
+pub const CHAIN_ID: &str = "aura-testnet";
+pub const DEFAULT_GAS_ADJUSTMENT: f64 = 2.0;
+pub const DEFAULT_GAS_LIMIT: u64 = 20000000;
 
 #[derive(Debug, PartialEq)]
 pub struct AuraTestApp {
@@ -44,11 +44,7 @@ impl AuraTestApp {
     pub fn init_base_accounts(&self, coins: &[Coin], count: u64) -> RunnerResult<Vec<SigningAccount>> {
         self.inner.init_base_accounts(coins, count)
     }
-
-    pub fn init_local_smart_account(&self, address: String, private_key: Vec<u8>) -> RunnerResult<SigningAccount> {
-        self.inner.init_local_smart_account(address, private_key)
-    }
-
+    
     /// Simulate transaction execution and return gas info
     pub fn simulate_tx<I>(
         &self,

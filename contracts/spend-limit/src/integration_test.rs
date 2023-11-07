@@ -13,6 +13,7 @@ mod unit_tests {
     use cosmrs::proto::cosmos::bank::v1beta1::{
         QueryAllBalancesRequest, QueryAllBalancesResponse
     };
+    use aura_test_tube::init_local_smart_account;
 
     fn get_account_balances(app: &AuraTestApp, address: String, denom: &str) -> u128 {
         let acc_balance = app.query::<QueryAllBalancesRequest,QueryAllBalancesResponse>(
@@ -131,7 +132,7 @@ mod unit_tests {
         assert_eq!(acc_balance, 10000000u128);
         
         // local account which has not been initialized on-chain
-        let sa_acc = app.init_local_smart_account(sa_addr.clone(), acc.private_key()).unwrap();
+        let sa_acc = init_local_smart_account(sa_addr.clone(), acc.private_key()).unwrap();
         // initializ smartaccount on-chain
         // execute with default gas setting
         // gas: 2000000

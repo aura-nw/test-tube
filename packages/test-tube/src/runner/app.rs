@@ -4,7 +4,7 @@ use cosmrs::crypto::secp256k1::SigningKey;
 use cosmrs::proto::tendermint::abci::{RequestDeliverTx, ResponseDeliverTx};
 use cosmrs::tx::{Fee, SignerInfo};
 use cosmrs::{tx, Any};
-use cosmwasm_std::{Coin, Uint128};
+use cosmwasm_std::Coin;
 use prost::Message;
 
 use crate::account::{Account, FeeSetting, SigningAccount, ADDRESS_PREFIX};
@@ -86,26 +86,6 @@ impl BaseApp {
             .map(|_| self.init_base_account(coins))
             .collect()
     }
-
-    pub fn  init_local_smart_account(&self, address: String, private_key: Vec<u8>) -> RunnerResult<SigningAccount> {
-        let signging_key = SigningKey::from_bytes(&private_key).map_err(|e| {
-            let msg = e.to_string();
-            DecodeError::SigningKeyDecodeError { msg }
-        })?;
-        Ok(SigningAccount::new(
-            address,
-            signging_key,
-            private_key,
-            FeeSetting::Custom { 
-                // gas price is 0.025
-                amount: Coin { 
-                    denom: self.fee_denom.clone(), 
-                    amount: Uint128::from(50000u128)
-                }, 
-                gas_limit: self.default_gas_limit 
-            },
-        ))
-    }   
 
     pub fn skip_time(&self, skip_time: i64) -> RunnerResult<()> {
         unsafe {
