@@ -3,6 +3,8 @@ mod runner;
 
 pub use cosmrs;
 
+pub use aura_proto::*;
+
 pub use module::*;
 pub use runner::app::AuraTestApp;
 pub use runner::helpers::init_local_smart_account;
