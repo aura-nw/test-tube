@@ -1,8 +1,8 @@
 [package]
-description = "Procedural macro for aura-std"
+description = "Procedural macro for aura-proto"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-name = "aura-std-derive"
+name = "aura-proto-derive"
 version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

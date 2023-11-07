@@ -1,4 +1,4 @@
-use aura_std_derive::CosmwasmExt;
+use aura_proto_derive::CosmwasmExt;
 
 /// Params defines the parameters for the smartaccount module.
 #[allow(clippy::derive_partial_eq_without_eq)]

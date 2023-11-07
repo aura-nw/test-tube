@@ -7,7 +7,6 @@ pub mod module;
 pub mod runner;
 
 pub use cosmrs;
-pub use osmosis_std;
 
 pub use account::{Account, NonSigningAccount, SigningAccount};
 pub use module::*;

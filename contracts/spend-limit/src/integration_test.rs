@@ -5,15 +5,15 @@ mod unit_tests {
     use cosmos_sdk_proto::traits::MessageExt;
     use cosmos_sdk_proto::cosmos::bank::v1beta1::{MsgSend, MsgSendResponse};
     use cosmwasm_schema::cw_serde;
-    use test_tube::runner::result::RunnerExecuteResult;
-    use aura_std::types::smartaccount::v1beta1::{Params, CodeID};
+    use aura_test_tube::RunnerExecuteResult;
+    use aura_proto::types::smartaccount::v1beta1::{Params, CodeID};
     use cosmwasm_std::coins;
     use aura_test_tube::{Wasm, AuraTestApp, SmartAccount};
-    use test_tube::{Account, Runner, Module, SigningAccount};
     use cosmrs::proto::cosmos::bank::v1beta1::{
         QueryAllBalancesRequest, QueryAllBalancesResponse
     };
     use aura_test_tube::init_local_smart_account;
+    use aura_test_tube::{Runner, Module, Account, SigningAccount};
 
     fn get_account_balances(app: &AuraTestApp, address: String, denom: &str) -> u128 {
         let acc_balance = app.query::<QueryAllBalancesRequest,QueryAllBalancesResponse>(
@@ -91,7 +91,7 @@ mod unit_tests {
             disable_msgs_list: vec![],
             max_gas_execute: 2000000,
         };
-        let param_set = aura_std::shim::Any{
+        let param_set = aura_proto::shim::Any{
             type_url: String::from("/aura.smartaccount.v1beta1.Params"),
             value: params.to_bytes().unwrap()
         };
@@ -102,7 +102,7 @@ mod unit_tests {
 
         
         // generate smartaccount address
-        let pub_key = aura_std::shim::Any {
+        let pub_key = aura_proto::shim::Any {
             type_url: String::from("/cosmos.crypto.secp256k1.PubKey"),
             value: cosmos_sdk_proto::cosmos::crypto::secp256k1::PubKey { 
                 key: acc.public_key().to_bytes()
