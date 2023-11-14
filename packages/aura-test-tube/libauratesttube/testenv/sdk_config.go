@@ -6,8 +6,6 @@ import (
 	"github.com/aura-nw/aura/app"
 )
 
-var IsConfigSet = false
-
 func InitSDKConfig() {
 	// Set prefixes
 	accountPubKeyPrefix := app.AccountAddressPrefix + "pub"

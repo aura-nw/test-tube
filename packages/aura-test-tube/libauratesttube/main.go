@@ -35,20 +35,22 @@ import (
 
 var (
 	envCounter  uint64 = 0
+	IsConfigSet bool   = false
 	envRegister        = sync.Map{}
 	mu          sync.Mutex
 )
 
 //export InitTestEnv
 func InitTestEnv() uint64 {
-	if !testenv.IsConfigSet {
-		testenv.InitSDKConfig()
-		testenv.IsConfigSet = true
-	}
 
 	// Temp fix for concurrency issue
 	mu.Lock()
 	defer mu.Unlock()
+
+	if !IsConfigSet {
+		testenv.InitSDKConfig()
+		IsConfigSet = true
+	}
 
 	env := new(testenv.TestEnv)
 	env.App = testenv.SetupAuraApp()
