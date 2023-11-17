@@ -107,9 +107,21 @@ impl BaseApp {
         let addr = signer.address();
         redefine_as_go_string!(addr);
 
-        let seq = unsafe { AccountSequence(self.id, addr) };
+        let seq = unsafe { 
+            let res = AccountSequence(self.id, addr);
+            let res = RawResult::from_non_null_ptr(res).into_result()?;
+            let buf: [u8; 8] = [res[0],res[1],res[2],res[3],res[4],res[5],res[6],res[7]];
 
-        let account_number = unsafe { AccountNumber(self.id, addr) };
+            u64::from_be_bytes(buf)
+        };
+
+        let account_number = unsafe { 
+            let res = AccountNumber(self.id, addr);
+            let res = RawResult::from_non_null_ptr(res).into_result()?;
+            let buf: [u8; 8] = [res[0],res[1],res[2],res[3],res[4],res[5],res[6],res[7]];
+
+            u64::from_be_bytes(buf)
+        };
         let signer_info = SignerInfo::single_direct(Some(signer.public_key()), seq);
         let auth_info = signer_info.auth_info(fee);
         let sign_doc = tx::SignDoc::new(

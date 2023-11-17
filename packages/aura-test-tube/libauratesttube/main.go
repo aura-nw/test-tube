@@ -185,38 +185,39 @@ func Query(envId uint64, path, base64QueryMsgBytes string) *C.char {
 }
 
 //export AccountSequence
-func AccountSequence(envId uint64, bech32Address string) uint64 {
+func AccountSequence(envId uint64, bech32Address string) *C.char {
 	env := loadEnv(envId)
 
 	addr, err := sdk.AccAddressFromBech32(bech32Address)
-
 	if err != nil {
 		panic(err)
 	}
 
 	acc := env.App.AccountKeeper.GetAccount(env.Ctx, addr)
-
 	if acc == nil {
-		panic("account not found")
+		return encodeErrToResultBytes(result.QueryError, fmt.Errorf("Account not found"))
 	}
 
 	seq := acc.GetSequence()
 
-	return seq
+	return encodeBytesResultBytes(sdk.Uint64ToBigEndian(seq))
 }
 
 //export AccountNumber
-func AccountNumber(envId uint64, bech32Address string) uint64 {
+func AccountNumber(envId uint64, bech32Address string) *C.char {
 	env := loadEnv(envId)
 
 	addr, err := sdk.AccAddressFromBech32(bech32Address)
-
 	if err != nil {
 		panic(err)
 	}
 
 	acc := env.App.AccountKeeper.GetAccount(env.Ctx, addr)
-	return acc.GetAccountNumber()
+	if acc == nil {
+		return encodeErrToResultBytes(result.QueryError, fmt.Errorf("Account not found"))
+	}
+
+	return encodeBytesResultBytes(sdk.Uint64ToBigEndian(acc.GetAccountNumber()))
 }
 
 //export Simulate
@@ -274,9 +275,8 @@ func SetParamSet(envId uint64, subspaceName, base64ParamSetBytes string) *C.char
 	}
 
 	pset, err := pReg.UnpackAny(&any)
-
 	if err != nil {
-		return encodeErrToResultBytes(result.ExecuteError, err)
+		panic(err)
 	}
 
 	subspace.SetParamSet(env.Ctx, pset)

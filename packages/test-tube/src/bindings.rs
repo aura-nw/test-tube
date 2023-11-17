@@ -234,10 +234,10 @@ extern "C" {
     ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
-    pub fn AccountSequence(envId: GoUint64, bech32Address: GoString) -> GoUint64;
+    pub fn AccountSequence(envId: GoUint64, bech32Address: GoString) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
-    pub fn AccountNumber(envId: GoUint64, bech32Address: GoString) -> GoUint64;
+    pub fn AccountNumber(envId: GoUint64, bech32Address: GoString) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn Simulate(envId: GoUint64, base64TxBytes: GoString) -> *mut ::std::os::raw::c_char;
