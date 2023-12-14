@@ -9,7 +9,7 @@ mod unit_tests {
     use aura_proto::types::smartaccount::v1beta1::{Params, CodeID};
     use cosmwasm_std::coins;
     use aura_test_tube::{Wasm, AuraTestApp, SmartAccount};
-    use cosmrs::proto::cosmos::bank::v1beta1::{
+    use cosmos_sdk_proto::cosmos::bank::v1beta1::{
         QueryAllBalancesRequest, QueryAllBalancesResponse
     };
     use aura_test_tube::init_local_smart_account;

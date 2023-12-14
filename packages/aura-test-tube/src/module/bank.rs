@@ -1,4 +1,4 @@
-use cosmrs::proto::cosmos::bank::v1beta1::{
+use cosmos_sdk_proto::cosmos::bank::v1beta1::{
     QueryAllBalancesRequest, QueryAllBalancesResponse, QueryBalanceRequest, QueryBalanceResponse,
     QueryTotalSupplyRequest, QueryTotalSupplyResponse,
 };

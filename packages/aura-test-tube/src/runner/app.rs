@@ -50,7 +50,7 @@ impl AuraTestApp {
         &self,
         msgs: I,
         signer: &SigningAccount,
-    ) -> RunnerResult<cosmrs::proto::cosmos::base::abci::v1beta1::GasInfo>
+    ) -> RunnerResult<cosmos_sdk_proto::cosmos::base::abci::v1beta1::GasInfo>
     where
         I: IntoIterator<Item = cosmrs::Any>,
     {
@@ -102,7 +102,7 @@ mod tests {
     use test_tube::account::Account;
     use test_tube::runner::*;
 
-    use cosmrs::proto::cosmos::bank::v1beta1::{
+    use cosmos_sdk_proto::cosmos::bank::v1beta1::{
         QueryAllBalancesRequest, QueryAllBalancesResponse
     };
 

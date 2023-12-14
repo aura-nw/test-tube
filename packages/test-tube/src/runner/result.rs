@@ -1,8 +1,8 @@
 use crate::runner::error::{DecodeError, RunnerError};
 use cosmos_sdk_proto::cosmos::base::abci::v1beta1::{GasInfo, TxMsgData};
-use cosmrs::proto::tendermint::abci::ResponseDeliverTx;
+use cosmos_sdk_proto::traits::Message;
+use cosmos_sdk_proto::tendermint::v0_37::abci::ResponseDeliverTx;
 use cosmwasm_std::{Attribute, Event};
-use prost::Message;
 use std::ffi::CString;
 use std::str::Utf8Error;
 

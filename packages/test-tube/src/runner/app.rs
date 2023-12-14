@@ -1,11 +1,13 @@
 use std::ffi::CString;
 
 use cosmrs::crypto::secp256k1::SigningKey;
-use cosmrs::proto::tendermint::abci::{RequestDeliverTx, ResponseDeliverTx};
+use cosmos_sdk_proto::tendermint::v0_37::abci::{RequestDeliverTx, ResponseDeliverTx};
+use cosmos_sdk_proto::cosmos::base::abci::v1beta1::GasInfo;
+use cosmos_sdk_proto::traits::Message;
+use cosmrs::proto::traits::Message as CSMessage;
 use cosmrs::tx::{Fee, SignerInfo};
 use cosmrs::{tx, Any};
 use cosmwasm_std::Coin;
-use prost::Message;
 
 use crate::account::{Account, FeeSetting, SigningAccount, ADDRESS_PREFIX};
 use crate::bindings::{
@@ -153,7 +155,7 @@ impl BaseApp {
         &self,
         msgs: I,
         signer: &SigningAccount,
-    ) -> RunnerResult<cosmrs::proto::cosmos::base::abci::v1beta1::GasInfo>
+    ) -> RunnerResult<GasInfo>
     where
         I: IntoIterator<Item = cosmrs::Any>,
     {
@@ -173,7 +175,7 @@ impl BaseApp {
             let res = Simulate(self.id, base64_tx_bytes);
             let res = RawResult::from_non_null_ptr(res).into_result()?;
 
-            cosmrs::proto::cosmos::base::abci::v1beta1::GasInfo::decode(res.as_slice())
+            GasInfo::decode(res.as_slice())
                 .map_err(DecodeError::ProtoDecodeError)
                 .map_err(RunnerError::DecodeError)
         }
@@ -224,7 +226,7 @@ impl BaseApp {
     pub fn set_param_set(&self, subspace: &str, pset: Any) -> RunnerResult<()> {
         unsafe {
             BeginBlock(self.id);
-            let pset = Message::encode_to_vec(&pset);
+            let pset = CSMessage::encode_to_vec(&pset);
             let pset = base64::encode(&pset);
             redefine_as_go_string!(pset);
             redefine_as_go_string!(subspace);

@@ -1,4 +1,4 @@
-use cosmrs::proto::cosmwasm::wasm::v1::{
+use cosmos_sdk_proto::cosmwasm::wasm::v1::{
     AccessConfig, MsgExecuteContract, MsgExecuteContractResponse, MsgInstantiateContract,
     MsgInstantiateContractResponse, MsgInstantiateContract2, MsgInstantiateContract2Response,
     MsgStoreCode, MsgStoreCodeResponse, QuerySmartContractStateRequest, QuerySmartContractStateResponse,
@@ -65,7 +65,7 @@ where
                 msg: serde_json::to_vec(msg).map_err(EncodeError::JsonEncodeError)?,
                 funds: funds
                     .iter()
-                    .map(|c| cosmrs::proto::cosmos::base::v1beta1::Coin {
+                    .map(|c| cosmos_sdk_proto::cosmos::base::v1beta1::Coin {
                         denom: c.denom.parse().unwrap(),
                         amount: format!("{}", c.amount.u128()),
                     })
@@ -99,7 +99,7 @@ where
                 msg: serde_json::to_vec(msg).map_err(EncodeError::JsonEncodeError)?,
                 funds: funds
                     .iter()
-                    .map(|c| cosmrs::proto::cosmos::base::v1beta1::Coin {
+                    .map(|c| cosmos_sdk_proto::cosmos::base::v1beta1::Coin {
                         denom: c.denom.parse().unwrap(),
                         amount: format!("{}", c.amount.u128()),
                     })
@@ -128,7 +128,7 @@ where
                 msg: serde_json::to_vec(msg).map_err(EncodeError::JsonEncodeError)?,
                 funds: funds
                     .iter()
-                    .map(|c| cosmrs::proto::cosmos::base::v1beta1::Coin {
+                    .map(|c| cosmos_sdk_proto::cosmos::base::v1beta1::Coin {
                         denom: c.denom.parse().unwrap(),
                         amount: format!("{}", c.amount.u128()),
                     })
