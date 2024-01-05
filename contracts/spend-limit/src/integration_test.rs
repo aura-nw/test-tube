@@ -154,6 +154,7 @@ mod unit_tests {
         acc2.address(),
         vec![Coin{denom: "uaura".to_string(),amount: "5000".to_string(),}]
         );       
+        println!("{:?}", banksend_res);
         assert!(banksend_res.is_ok());
 
         // send coin from smartaccount success

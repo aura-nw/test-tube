@@ -1,6 +1,6 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use crate::state::Limit;
-use cosmwasm_std::Coin;
+use cosmwasm_std::{Coin, Binary};
 
 /// Message type for `instantiate` entry_point
 #[cw_serde]
@@ -13,7 +13,7 @@ pub struct InstantiateMsg {
 #[cw_serde]
 pub struct Any {
     pub type_url: String, // url type of message
-    pub value:    String, // value of message
+    pub value:    Binary, // value of message
     // etc.
     //  MsgData {
     //      type_url: "/cosmos.bank.v1beta1.MsgSend",
@@ -36,14 +36,16 @@ pub enum SudoMsg {
     PreExecute{
         //list of messages in transaction 
         msgs: Vec<Any>,
-        call_info: CallInfo
+        call_info: CallInfo,
+        is_authz: bool
     },
 
     // required `AfterExecute` method
     AfterExecute{
         //list of messages in transaction 
         msgs: Vec<Any>,
-        call_info: CallInfo
+        call_info: CallInfo,
+        is_authz: bool
     },
 }
 

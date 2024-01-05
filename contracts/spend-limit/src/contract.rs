@@ -51,11 +51,11 @@ pub fn sudo(
     msg: SudoMsg
 ) -> Result<Response, ContractError> {
     match msg {
-        SudoMsg::PreExecute{ msgs, call_info }
-        => execute_pre_execute(deps,env,msgs,call_info),
+        SudoMsg::PreExecute{ msgs, call_info, is_authz }
+        => execute_pre_execute(deps,env,msgs,call_info,is_authz),
 
-        SudoMsg::AfterExecute{ msgs, call_info }
-        => execute_after_execute(deps,env,msgs,call_info)
+        SudoMsg::AfterExecute{ msgs, call_info, is_authz }
+        => execute_after_execute(deps,env,msgs,call_info,is_authz)
 
     }
 }
@@ -80,6 +80,7 @@ fn execute_after_execute(
     env: Env,
     _msgs: Vec<Any>,
     _call_info: CallInfo,
+    _is_authz: bool
 ) -> Result<Response, ContractError> {
     let pre_balances = BALANCES.load(deps.storage)?;
 
@@ -124,6 +125,7 @@ fn execute_pre_execute(
     env: Env,
     _msgs: Vec<Any>,
     _call_info: CallInfo,
+    _is_authz: bool,
 ) -> Result<Response, ContractError> {
     // get the balances of contract
     let contract_balance = contract_all_balances(deps.querier, env.contract.address.to_string())?;
