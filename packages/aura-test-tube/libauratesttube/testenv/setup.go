@@ -22,8 +22,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	// cosmos-sdk
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -71,8 +71,8 @@ type DebugAppOptions struct{}
 
 // Get implements AppOptions
 func (ao DebugAppOptions) Get(o string) interface{} {
-	if o == server.FlagTrace {
-		return true
+	if o == flags.FlagChainID {
+		return "aura-testnet"
 	}
 	return nil
 }
